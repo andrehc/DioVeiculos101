@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\DioVeiculos101.props" />
+</Project>
