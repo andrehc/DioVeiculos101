@@ -13,13 +13,13 @@ public class Admin
 
     [Required]
     [StringLength(100)]
-    public string Username { get; set;  } = default!;
+    public string Name { get; set;  } = default!;
 
     [Required]
     [StringLength(100)]
     public string Email { get; set;  } = default!;
 
-    [StringLength(20)]
+    [MaxLength]
     public string Password { get; set;  } = default!;
 
     [StringLength(20)]
