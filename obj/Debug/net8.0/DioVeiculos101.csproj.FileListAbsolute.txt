@@ -167,3 +167,4 @@ C:\Users\hcost\source\repos\DIO\DioVeiculos101\bin\Debug\net8.0\Swashbuckle.AspN
 C:\Users\hcost\source\repos\DIO\DioVeiculos101\obj\Debug\net8.0\DioVeiculos101.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\hcost\source\repos\DIO\DioVeiculos101\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
 C:\Users\hcost\source\repos\DIO\DioVeiculos101\bin\Debug\net8.0\Microsoft.OpenApi.dll
+C:\Users\hcost\source\repos\DIO\DioVeiculos101\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
