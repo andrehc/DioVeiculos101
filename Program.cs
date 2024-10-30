@@ -156,12 +156,12 @@ app.MapPut("/admin/{Id}", ([FromRoute] int Id, AdminDTO adminDTO, IAdminService 
 
     var admin = adminService.GetById(Id);
 
-    if (admin == null)
-        return Results.NotFound();
+    if (admin == null) return Results.NotFound();
 
+    var passwordHasher = new PasswordHasher<Admin>();
     admin.Email = adminDTO.Email;
     admin.Name = adminDTO.Name;
-    admin.Password = adminDTO.Password;
+    admin.Password = adminDTO.Password = passwordHasher.HashPassword(admin, adminDTO.Password);
     admin.Profile = adminDTO.Profile.ToString();
 
     adminService.Update(admin);
