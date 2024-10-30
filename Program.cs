@@ -88,7 +88,7 @@ app.MapPost("/login", ([FromBody] LoginDTO loginDTO, IAdminService adminService)
 
     if (admin == null)
     {
-        return Results.Unauthorized();
+        return Results.NotFound();
     }
 
     var passwordHasher = new PasswordHasher<Admin>();
