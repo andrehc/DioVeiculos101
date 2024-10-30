@@ -8,6 +8,7 @@ public interface IAdminService
     Admin? Login(LoginDTO loginDto);
     List<Admin>? All(int? page, string? username = null, string? profile = null);
     Admin? GetById(int id);
+    Admin? GetByEmail(string email);
     Admin New(Admin admin);
     Admin Update(Admin admin); // id
     void Delete(Admin admin); // id

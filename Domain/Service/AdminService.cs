@@ -50,6 +50,10 @@ public class AdminService : IAdminService
     {
         return _dbContext.Admins.Where(v => v.Id == id).FirstOrDefault();
     }
+    public Admin? GetByEmail(string email)
+    {
+        return _dbContext.Admins.Where(v => v.Email == email).FirstOrDefault();
+    }
     public Admin New(Admin admin)
     {
         admin.Password = _passwordHasher.HashPassword(admin, admin.Password);

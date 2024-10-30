@@ -6,14 +6,14 @@ using DioVeiculos101.Infrastructure.Db;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DioVeiculos101.Domain.Entity;
-using System.ComponentModel.DataAnnotations;
 using DioVeiculos101.Domain.Enums;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using DioVeiculos101.Migrations;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 var key = builder.Configuration.GetSection("Jwt").ToString() ?? "chave-api-jwt";
@@ -30,13 +30,41 @@ builder.Services.AddAuthentication(option =>
     option.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateLifetime = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+        ValidateIssuer = false,
+        ValidateAudience = false
     };
 
 });
 
 builder.Services.AddAuthorization();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Insira o token: ",
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme{
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+
+});
 
 builder.Services.AddDbContext<DbContexto>(options =>
 {
@@ -45,15 +73,28 @@ builder.Services.AddDbContext<DbContexto>(options =>
 var app = builder.Build();
 
 #region Home
-app.MapGet("/", () => Results.Json(new Home())).WithTags("Home");
+app.MapGet("/", () => Results.Json(new Home())).AllowAnonymous().WithTags("Home");
 #endregion
 
 #region Admins
 app.MapPost("/login", ([FromBody] LoginDTO loginDTO, IAdminService adminService) =>
 {
-    var admin = adminService.Login(loginDTO);
+    if (string.IsNullOrEmpty(loginDTO.Email) || string.IsNullOrEmpty(loginDTO.Password))
+    {
+        return Results.BadRequest("Email e senha são obrigatórios.");
+    }
 
-    if (admin != null)
+    var admin = adminService.GetByEmail(loginDTO.Email);
+
+    if (admin == null)
+    {
+        return Results.Unauthorized();
+    }
+
+    var passwordHasher = new PasswordHasher<Admin>();
+    var verificationResult = passwordHasher.VerifyHashedPassword(admin, admin.Password, loginDTO.Password);
+
+    if (verificationResult == PasswordVerificationResult.Success)
     {
         string token = FillJwtToken(admin);
         return Results.Ok(new Logged
@@ -65,7 +106,7 @@ app.MapPost("/login", ([FromBody] LoginDTO loginDTO, IAdminService adminService)
     }
 
     return Results.Unauthorized();
-}).WithTags("Admins");
+}).AllowAnonymous().WithTags("Admins");
 
 app.MapPost("/admins", ([FromBody] AdminDTO adminDTO, IAdminService adminService) =>
 {
