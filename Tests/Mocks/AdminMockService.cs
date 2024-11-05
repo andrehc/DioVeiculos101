@@ -1,28 +1,39 @@
 using DioVeiculos101.Domain.DTO;
 using DioVeiculos101.Domain.Entity;
 using DioVeiculos101.Domain.Interface;
+using Microsoft.AspNetCore.Identity;
 
 namespace Tests.Mocks
 {
     public class AdminMockService : IAdminService
     {
+        private static readonly PasswordHasher<Admin> passwordHasher = new PasswordHasher<Admin>();
+        //admin.Password = passwordHasher.HashPassword(admin, "102030");
         private static List<Admin> admins = new List<Admin>()
         {
-            new Admin() {
+            new Admin
+            {
                 Id = 1,
                 Email = "dollor@mail.com",
                 Name = "Dollor Asimmet",
-                Password = "102030",
+                Password = GenerateHashedPassword("102030"),
                 Profile = "admin"
             },
-            new Admin() {
+            new Admin
+            {
                 Id = 2,
                 Email = "sanctum@mail.com",
                 Name = "Sanctum Famias",
-                Password = "102030",
+                Password = GenerateHashedPassword("102030"),
                 Profile = "editor"
             }
         };
+
+        private static string GenerateHashedPassword(string plainPassword)
+        {
+            var tempAdmin = new Admin(); // Cria um admin temporário
+            return passwordHasher.HashPassword(tempAdmin, plainPassword);
+        }
 
         public List<Admin>? All(int? page, string? username = null, string? profile = null)
         {
@@ -31,7 +42,6 @@ namespace Tests.Mocks
 
         public void Delete(Admin admin)
         {
-            admin = admins.Find(x => x.Id == admin.Id);
             admins.Remove(admin);
         }
 
@@ -60,7 +70,6 @@ namespace Tests.Mocks
 
         public Admin Update(Admin admin)
         {
-            admin = admins.Find(a => a.Id == admin.Id);
             admins.Add(admin);
             return admin;
         }
