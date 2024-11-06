@@ -2,8 +2,10 @@
 
 namespace Tests.Domain.Entities
 {
+    [TestClass]
     public class VehicleTest
     {
+        [TestMethod]
         public void TestGetSetVehicleProperties()
         {
             var v = new Vehicle();

@@ -27,8 +27,4 @@
     <ProjectReference Include="..\Api\DioVeiculos101.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
 </Project>
